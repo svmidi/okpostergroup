@@ -64,7 +64,7 @@ class OKPOSTERFUNCTION {
 		$okposter_counttext = get_option('okposter_counttext');
 		$postType = get_post_type($post_id);
 
-		//$image = $this->setImageVK($text, $post_id)->id; //Получаем ID фотографии
+		//$image = $this->setImageOK($text, $post_id)->id; //Получаем ID фотографии
 		$text = str_replace('<!--more-->', '', strip_tags(strip_shortcodes($text))) . "\n\n"; //вырезаем шорткоды, теги, "далее"//
 
 		$content = array('media' => array());
@@ -109,7 +109,7 @@ class OKPOSTERFUNCTION {
 		$parameters['access_token'] = $okposter_accesstoken;
 
 
-		echo "<pre>";
+		/*echo "<pre>";
 		print_r($parameters);
 		echo "</pre>";
 
@@ -119,44 +119,19 @@ class OKPOSTERFUNCTION {
 
 		exit;
 		
-		$result = $this->sentRequesOK(self::METHOD_URL_OK, $parameters, $this->proxy);
+		/*$result = $this->sentRequesOK(self::METHOD_URL_OK, $parameters, $this->proxy);
 
-		return $result;
-	}
+		return $result;*/
 
-	/**
-	 * Запросы к сервису ok.ru
-	 * @param strint $method Полный метод OK, с УРЛ и знаком ?
-	 * @param array $arg Массив аргументов для создания запроса
-	 */
-	public function sentRequesOK($method, $arg, $proxy = null) {
-
-		$query = http_build_query($arg);
- 
-		if (!empty($proxy)) { //Если прокси, то отправляем по старорму
-			$url = $method . $arg;
-			$curl = curl_init();
-			curl_setopt($curl, CURLOPT_URL, $url);
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($curl, CURLOPT_PROXY, $proxy);
-			curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 12);
-			if (!empty($this->proxy_userpaswd)) {
-				curl_setopt($curl, CURLOPT_PROXYUSERPWD, $this->proxy_userpaswd);
-			}
-			$curlinfo = curl_exec($curl); //Результат запроса
-			$response = curl_getinfo($curl); //Информация о запросе
-			curl_close($curl);
-			return $curlinfo;
-		} else { //Если не прокси, шлём так
-			echo $query;
-			$curlinfo = wp_remote_post($method, array('body' => $arg));
-			if (is_wp_error($curlinfo)) {
-				$errMessage = $curlinfo->get_error_message();
-				echo 'Ошибка отправки: ' . $errMessage;
-			}
-			return $curlinfo['body'];
+		$curlinfo = wp_remote_post(self::METHOD_URL_OK, array('body' => $parameters));
+		if (is_wp_error($curlinfo)) {
+			$errMessage = $curlinfo->get_error_message();
+			echo 'Ошибка отправки: ' . $errMessage;
 		}
+
+		return $curlinfo['body'];
 	}
+
 
 	/**
 	 * Проверка Чекеда
@@ -177,7 +152,7 @@ class OKPOSTERFUNCTION {
 	/**
 	 * Получение изображения поста из миниатюры или из прикрепленного изображения
 	 */
-	public function setImageVK($text, $post_id) {
+	public function setImageOK($text, $post_id) {
 		$okposter_id = get_option('okposter_id'); //ID группы или пользователя
 		$images_post = get_attached_file(get_post_thumbnail_id($post_id));
 
