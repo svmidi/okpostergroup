@@ -1,10 +1,18 @@
 <h2>Журнал работы плагина</h2>
 <?php
-
+$okposter_id = get_option('okposter_id'); //ID группы или пользователя
+$okposter_friends_only = get_option('okposter_friends_only'); //Доступность записи, 0 - всем
+$okposter_from_group = get_option('okposter_from_group'); //От чьего имени публиковать
+$okposter_signed = get_option('okposter_signed');
+$okposter_counttext = get_option('okposter_counttext');
+$okposter_onoff = get_option('okposter_onoff');
 $okposter_jornal = get_option('okposter_jornal');
 
-$active_plugin = get_option('active_plugins'); //Активные плагины
+$okposter_idsoft = get_option('okposter_aid'); //ID приложения
+$okposter_token = get_option('okposter_accesstoken'); //Токен приложения
 
+$active_plugin = get_option('active_plugins'); //Активные плагины
+//
 $plugins_url = admin_url() . 'options-general.php?page='.OKPOSTERBASE::URL_SUB_MENU.'&tab=jornal'; //URL страницы плагина
 $dir_plugin_absolut = plugin_dir_path(__FILE__);
 ?>
@@ -61,4 +69,8 @@ if (isset($_GET['clearjornal'])) {
 <?php } else { ?> 
 <p>Нет записей</p>
 <?php } ?>
+
+
+
 </table>
+
