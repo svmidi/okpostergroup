@@ -71,16 +71,21 @@ class OKPOSTERFUNCTION {
 
 		if ($okposter_counttext == 0) { //пост без ограничений
 			$text_clear = wp_kses($title, 'strip') . "\n\n " . wp_kses($text, 'strip');
-			$content[] = array('description' => $text_clear, 'caption' => $title);
+			$content['media'][] = array('type' => 'text', 'text' => $text_clear);
 		} elseif ($okposter_counttext > 0) { //Пост с обрезкой до кол-ва знаков указанных пользователем
 			$text_clear = wp_kses($title, 'strip') . "\n\n " . wp_trim_words(wp_kses($text, 'strip'), $okposter_counttext, '...');
-			$content[] = array('description' => $text_clear, 'caption' => $title);
+			$content['media'][] = array('type' => 'text', 'text' => $text_clear);
+		} else {
+			$text_clear = '';
 		}
+
 		unset($text);
-//!!!!!!!!!!!!!!!!!
+
+		$content['caption'] = $title;
+
 		$link = ($okposter_text_link)?'true':'false';
 
-		$content['media'][] = array('type' => 'link', 'url' => $link_post, 'title' => $title);
+		$content['media'][] = array('type' => 'link', 'url' => $link_post);
 
 		$jsonContent = json_encode($content); 
 
@@ -94,7 +99,7 @@ class OKPOSTERFUNCTION {
 			'method'            => 'mediatopic.post', 
 			'text_link_preview' => $link, 
 			'type'              => 'GROUP_THEME'
-		);      
+		);
 		foreach ($parameters as $key => $value) {
 			$signature .= $key.'='.$value;
 		}
@@ -102,6 +107,17 @@ class OKPOSTERFUNCTION {
 		$sig = md5($signature.$secKey);
 		$parameters['sig'] = $sig;
 		$parameters['access_token'] = $okposter_accesstoken;
+
+
+		echo "<pre>";
+		print_r($parameters);
+		echo "</pre>";
+
+		echo "<pre>";
+		print_r($content);
+		echo "</pre>";
+
+		exit;
 		
 		$result = $this->sentRequesOK(self::METHOD_URL_OK, $parameters, $this->proxy);
 
@@ -109,8 +125,8 @@ class OKPOSTERFUNCTION {
 	}
 
 	/**
-	 * Запросы к сервису Вконтакте
-	 * @param strint $method Полный метод ВК, с УРЛ и знаком ?
+	 * Запросы к сервису ok.ru
+	 * @param strint $method Полный метод OK, с УРЛ и знаком ?
 	 * @param array $arg Массив аргументов для создания запроса
 	 */
 	public function sentRequesOK($method, $arg, $proxy = null) {

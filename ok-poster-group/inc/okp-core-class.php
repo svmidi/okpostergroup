@@ -111,7 +111,7 @@ class okpOSTERBASE {
 		global $post;
 		if (in_array($post->post_type, get_option('okposter_posttype')) AND isset($_GET['okp_repost'])) {
 			$post_id = $_GET['okp_repost'];
-			$okpunk = new okpOSTERFUNCTION;
+			$okpunk = new OKPOSTERFUNCTION;
 			$status_sent = $okpunk->setVkWall($post_id); //Отправка текста
 			$status_arr = json_decode($status_sent);
 			//Удаляем из строки запроса номер записи
@@ -124,7 +124,7 @@ class okpOSTERBASE {
 			//--Конец обработки строки запроса
 			$okpunk->logJornal($post_id, $post->post_title, $status_sent); //Логируем результаты
 
-			if (okpOSTERFUNCTION::compareOldPHPVer('5.3.0', '<') == FALSE) { //PHP>5.3
+			if (OKPOSTERFUNCTION::compareOldPHPVer('5.3.0', '<') == FALSE) { //PHP>5.3
 				if (!$status_arr->{'error'}) {
 					add_action('all_admin_notices', function() {
 						echo '<div class="notice notice-success"><p>Запись #' . $_GET['okp_repost'] . ' отправлена в ok.ru!</p></div>';
@@ -265,9 +265,6 @@ class okpOSTERBASE {
 		if (!current_user_can('edit_post', $post_id)) {
 			return $post_id;
 		}
-		//Убедимся что поле установлено.
-		//if (!isset($_POST['okposter_new_field']))
-		//    return;
 
 		$data1 = $_POST['okposter_new_field'];
 		//Обновление данных в базе даннхы
@@ -284,7 +281,7 @@ class okpOSTERBASE {
 		$title = $postData->post_title;
 
 		$okposter_onoff = get_option('okposter_onoff');
-		$okpunk = new okpOSTERFUNCTION;
+		$okpunk = new OKPOSTERFUNCTION;
 		$status_post = $postData->post_status; //Статус поста
 		$date_create = $postData->post_date_gmt; //Дата создания записи
 		$date_modificed = $postData->post_modified_gmt; //Дата изменения записи
@@ -317,15 +314,7 @@ class okpOSTERBASE {
 
 		$chek = get_post_meta($post_id, '_okposter_meta_value_key', true);
 
-		if ($okposter_onoff == 'on') {
-			if ($date_create == $date_modificed) {
-				$status_sent = $okpunk->setOkWall($post_id); //Отправка текста
-				$okpunk->logJornal($post_id, $title, $status_sent); //Логируем результаты
-			} elseif ($date_create !== $date_modificed and $radio_chek !== '1') {
-				$status_sent = $okpunk->setOkWall($post_id); //Отправка текста
-				$okpunk->logJornal($post_id, $title, $status_sent); //Логируем результаты
-			}
-		} elseif ($chek == 'on') {
+		if ($chek == 'on') {
 
 			if ($date_create == $date_modificed) {
 				$status_sent = $okpunk->setOkWall($post_id); //Отправка текста
@@ -334,6 +323,7 @@ class okpOSTERBASE {
 				$status_sent = $okpunk->setOkWall($post_id); //Отправка текста
 				$okpunk->logJornal($post_id, $title, $status_sent); //Логируем результаты
 			}
+
 		} else {
 			return $post_id;
 		}
