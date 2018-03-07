@@ -1,34 +1,9 @@
 <?php
-
-/**
- * Класс с функционалом и обработками
- */
 class OKPOSTERFUNCTION {
 
 	const METHOD_URL_OK = 'https://api.ok.ru/fb.do?'; //Метод постинга сообщений
 	const METHOD_URL_VKIMAGE = 'https://api.vk.com/method/photos.getWallUploadServer?'; //Метод получения сервера загрузок изображения
 	const METHOD_URL_VKIMAGE_SAVE = 'https://api.vk.com/method/photos.saveWallPhoto?'; //Загружает изображение в группу
-
-	/**
-	 *
-	 * @var string Прокси сервер для CURL IP:порт
-	 */
-
-	var $proxy;
-
-	/**
-	 *
-	 * @var string Прокси сервер для CURL Пользователь:пароль
-	 */
-	var $proxy_userpaswd;
-
-	/**
-	 * Конструктор класса
-	 */
-	public function __construct() {
-		$this->proxy = get_option('okposter_proxy');
-		$this->proxy_userpaswd = get_option('okposter_proxy_userpaswd');
-	}
 
 	/**
 	 * Условия для обновления версии плагина
@@ -57,14 +32,12 @@ class OKPOSTERFUNCTION {
 		$okposter_seckey = get_option('okposter_seckey'); //Секретный ключ приложения
 		$okposter_pubkey = get_option('okposter_pubkey'); //Публичный ключ приложения
 		$okposter_text_link = get_option('okposter_text_link'); //разворачивать ссылку
-
 		
 		$okposter_id = get_option('okposter_id'); //ID группы или пользователя
 		$okposter_signed = get_option('okposter_signed');
 		$okposter_counttext = get_option('okposter_counttext');
 		$postType = get_post_type($post_id);
 
-		//$image = $this->setImageOK($text, $post_id)->id; //Получаем ID фотографии
 		$text = str_replace('<!--more-->', '', strip_tags(strip_shortcodes($text))) . "\n\n"; //вырезаем шорткоды, теги, "далее"//
 
 		$content = array('media' => array());
@@ -108,21 +81,6 @@ class OKPOSTERFUNCTION {
 		$parameters['sig'] = $sig;
 		$parameters['access_token'] = $okposter_accesstoken;
 
-
-		/*echo "<pre>";
-		print_r($parameters);
-		echo "</pre>";
-
-		echo "<pre>";
-		print_r($content);
-		echo "</pre>";
-
-		exit;
-		
-		/*$result = $this->sentRequesOK(self::METHOD_URL_OK, $parameters, $this->proxy);
-
-		return $result;*/
-
 		$curlinfo = wp_remote_post(self::METHOD_URL_OK, array('body' => $parameters));
 		if (is_wp_error($curlinfo)) {
 			$errMessage = $curlinfo->get_error_message();
@@ -130,141 +88,6 @@ class OKPOSTERFUNCTION {
 		}
 
 		return $curlinfo['body'];
-	}
-
-
-	/**
-	 * Проверка Чекеда
-	 * @param string $options Опция из базы данных
-	 * @param string $value Текущее значение для сравнения (например значение из цикла)
-	 * @return echo checked или пусто
-	 */
-	public function chekedOptions($options, $value) {
-		if (!empty($options) or ! empty($value)) {
-			if ($options == $value) {
-				echo 'checked';
-			} elseif ($options !== $value) {
-				echo '';
-			}
-		}
-	}
-
-	/**
-	 * Получение изображения поста из миниатюры или из прикрепленного изображения
-	 */
-	public function setImageOK($text, $post_id) {
-		$okposter_id = get_option('okposter_id'); //ID группы или пользователя
-		$images_post = get_attached_file(get_post_thumbnail_id($post_id));
-
-		$okposter_accesstoken = get_option('okposter_accesstoken'); //Токен приложения
-		if (empty($images_post)) {
-			$media = get_attached_media('image', $post_id);
-			$image = array_shift($media);
-			$images_post = get_attached_file($image->ID); //Изображение прикреплённое к посту
-			if (empty($images_post)) {
-				$images_post = $this->searchImageText($text); // Ищем изображение в тексте
-				if (empty($images_post)) {
-					return false;
-				}
-			}
-		}
-		$argument = array(
-			"group_id" => trim($okposter_id, '-'),
-			"version" => "5.27"
-		);
-		$curlinfo = $this->sentRequesVK(self::METHOD_URL_VKIMAGE, $argument, $this->proxy);
-		unset($argument);
-
-		if (!empty($curlinfo)) {
-			$UrlObj = json_decode($curlinfo);
-			$urlimgvk = $UrlObj->response->upload_url;
-		}
-		if (!empty($urlimgvk)) {
-			$curl = curl_init();
-			curl_setopt($curl, CURLOPT_URL, $urlimgvk);
-			curl_setopt($curl, CURLOPT_POST, 1);
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-			if (self::compareOldPHPVer('5.6.0', '<')) {
-				curl_setopt($curl, CURLOPT_POSTFIELDS, array('photo' => '@' . $images_post));
-			} elseif (self::compareOldPHPVer('5.5.0', '>')) {
-				curl_setopt($curl, CURLOPT_POSTFIELDS, ['photo' => new CurlFile($images_post)]);
-			}
-			if (!empty($this->proxy)) {
-				curl_setopt($curl, CURLOPT_PROXY, $this->proxy);
-				curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 12);
-			}
-			if (!empty($this->proxy_userpaswd)) {
-				curl_setopt($curl, CURLOPT_PROXYUSERPWD, $this->proxy_userpaswd);
-			}
-			$curlinfo = curl_exec($curl); //Результат запроса
-			$response = curl_getinfo($curl); //Информация о запросе
-			curl_close($curl);
-			$imageObject = json_decode($curlinfo);
-			if (!empty($imageObject->server) && !empty($imageObject->photo) && !empty($imageObject->hash)) {
-
-				$argument = array(
-					"group_id" => trim($okposter_id, '-'),
-					"server" => $imageObject->server,
-					"photo" => $imageObject->photo,
-					"hash" => $imageObject->hash
-				);
-				$curlinfo = $this->sentRequesVK(self::METHOD_URL_VKIMAGE_SAVE, $argument, $this->proxy);
-				unset($argument);
-
-				$resultObject = json_decode($curlinfo);
-
-				if (isset($resultObject) && isset($resultObject->response[0]->id)) {
-					return $resultObject->response[0];
-				} else {
-					return false;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Поиск изображений в тексте
-	 * @param string $text Текст поста с тегами HTML
-	 * @return string абсолютный серверный путь до изображения
-	 */
-	public function searchImageText($text) {
-		$first_img = '';
-		ob_start();
-		ob_end_clean();
-		$output = preg_match_all('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $text, $matches);
-		$first_img = $matches [1] [0];
-		$col1 = strlen(WP_CONTENT_URL);
-		$col2 = strlen($first_img);
-		$patch = substr($first_img, $col1, $col2);
-		$result = WP_CONTENT_DIR . $patch;
-//В перспективе изображение по умолчанию (сейчас не реализованно)
-		if (empty($first_img)) {
-			return false;
-//$first_img = "/images/default.jpg";
-		}
-		return $result;
-	}
-
-	/**
-	 * 
-	 * Относительный путь до фото преобразует в абсолютный
-	 * @return string абсолютный серверный путь до изображения
-	 */
-	public function searchImgaeHTTP($http) {
-		$text = '<img src="' . $http . '">';
-		$first_img = '';
-		$output = preg_match_all('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $text, $matches);
-		$first_img = $matches [1] [0];
-		$col1 = strlen(WP_CONTENT_URL);
-		$col2 = strlen($first_img);
-		$patch = substr($first_img, $col1, $col2);
-		$result = WP_CONTENT_DIR . $patch;
-// В перспективе изображение по умолчанию (сейчас не реализованно)
-		if (empty($first_img)) {
-			return false;
-//$first_img = "/images/default.jpg";
-		}
-		return $result;
 	}
 
 	/**
@@ -282,28 +105,6 @@ class OKPOSTERFUNCTION {
 		array_push($okposter_jornal_new, $okposter_jornal_temp);
 		update_option('okposter_jornal', $okposter_jornal_new);
 	}
-
-	/**
-	 * Получает списко категорий постов (НЕ WOO)
-	 */
-	public static function getAllCategory() {
-		$arg = array(
-			'hide_empty' => '0',
-			'order' => 'ASC'
-		);
-		$categories = get_categories($args);
-		foreach ($categories as $cat) {
-			?>
-
-			<p><input name="okposter_prooptions[selectcat[<?php echo $cat->cat_ID; ?>]]" type="checkbox" value="<?php echo $cat->cat_ID; ?>" <?php
-				if (isset($okposter_prooptions['selectcat'][$cat->cat_ID])) {
-					checked($okposter_prooptions['selectcat'][$cat->cat_ID], $cat->cat_ID, 1);
-				}
-				?>><?php echo $cat->name; ?></p>
-			<?php
-		}
-	}
-
 
 	/**
 	 * Сравнивает версии PHP

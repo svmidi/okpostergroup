@@ -33,6 +33,25 @@ class okpOSTERBASE {
 	}
 
 	/**
+	 * Добавление опций в базу данных
+	 */
+	public function addOptions() {
+		add_option('okposter_aid'); //ID приложения (Application ID)
+		add_option('okposter_gid'); //От группа в которую публиковать (gid)
+		add_option('okposter_accesstoken'); //Токен приложения (access_token)
+		add_option('okposter_seckey'); //секретный ключ приложения
+		add_option('okposter_pubkey'); //публичный ключ приложения
+		add_option('okposter_text_link', '0'); //ссылка - текст
+		add_option('okposter_counttext', '40');
+		add_option('okposter_onoff');
+		
+		add_option('okposter_id', '-'); //ID группы или пользователя
+		add_option('okposter_signed', '1');
+		add_option('okposter_jornal', array());
+		add_option('okposter_posttype', array('post' => 'post')); //Типы выбранных записей
+	}
+
+	/**
 	 * Опции вызываемые деактивацией
 	 */
 	public function deactivationPlugin() {
@@ -45,14 +64,10 @@ class okpOSTERBASE {
 		delete_option('okposter_counttext');
 		delete_option('okposter_onoff');
 
-
 		delete_option('okposter_id'); //ID группы или пользователя
 		delete_option('okposter_signed');
 		delete_option('okposter_jornal');
 		delete_option('okposter_posttype'); //Типы выбранных записей
-		delete_option('okposter_proxy'); //Прокси
-		delete_option('okposter_proxy_userpaswd'); //Прокси юзер и пароль
-		delete_option('okposter_prooptions'); //Про опции
 	}
 
 	/**
@@ -91,7 +106,7 @@ class okpOSTERBASE {
 		$postData = get_post($post_id);
 		$title = $postData->post_title;
 		$okposter_onoff = get_option('okposter_onoff');
-		$okpunk = new okpOSTERFUNCTION;
+		$okpunk = new OKPOSTERFUNCTION;
 		$status_post = $postData->post_status; //Статус поста
 		if ($status_post == 'draft' || $status_post == 'private' || $status_post == 'trash') {
 			return $post_id;
@@ -162,29 +177,6 @@ class okpOSTERBASE {
 			$actions['okp-post'] = '<a href="http://' . $_SERVER["HTTP_HOST"] . $url . '">Отправить в ok.ru</a>';
 		}
 		return $actions;
-	}
-
-	/**
-	 * Добавление опций в базу данных
-	 */
-	public function addOptions() {
-		add_option('okposter_gid', '1'); //От группа в которую публиковать (gid)
-		add_option('okposter_aid'); //ID приложения (Application ID)
-		add_option('okposter_accesstoken'); //Токен приложения (access_token)
-		add_option('okposter_seckey'); //секретный ключ приложения
-		add_option('okposter_pubkey'); //публичный ключ приложения
-		add_option('okposter_text_link', '0'); //ссылка - текст
-		add_option('okposter_counttext', '40');
-		
-		add_option('okposter_id', '-'); //ID группы или пользователя
-		add_option('okposter_signed', '1');
-		add_option('okposter_onoff');
-		add_option('okposter_jornal', array());
-		add_option('okposter_posttype', array('post' => 'post')); //Типы выбранных записей
-		add_option('okposter_proxy'); //Прокси
-		add_option('okposter_proxy_user'); //Прокси юзер
-		add_option('okposter_proxy_userpaswd');  //Прокси юзер и пароль
-		add_option('okposter_prooptions', array());  //ПРО настройки
 	}
 
 	/**
@@ -276,7 +268,6 @@ class okpOSTERBASE {
 	 */
 	public function metaboxSentOK($post_id) {
 
-
 		$postData = get_post($post_id);
 		$title = $postData->post_title;
 
@@ -288,7 +279,6 @@ class okpOSTERBASE {
 		$radio_chek = $_POST['okposter_new_field_radio']; // получаем значение РадиоБутон
 
 		if (!wp_verify_nonce($_POST['okposter_noncename'], plugin_basename(__FILE__))) {
-
 
 			return $post_id;
 		}
@@ -310,7 +300,6 @@ class okpOSTERBASE {
 
 			return $post_id;
 		}
-
 
 		$chek = get_post_meta($post_id, '_okposter_meta_value_key', true);
 
