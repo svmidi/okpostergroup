@@ -1,4 +1,5 @@
 === OK Poster Group ===
+Plugin URI: https://github.com/svmidi/okpostergroup
 Contributors: svmidi
 Tags: ok, autopost, auto-post, auto post, social, ok.com, odnoklassniki
 Requires at least: 4.9
