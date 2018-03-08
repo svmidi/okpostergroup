@@ -3,7 +3,7 @@
 /**
  * Базовый Класс для плагина 
  */
-class okpOSTERBASE {
+class OKPOSTERBASE {
 
 	const NAME_PLUGIN = 'OK Poster Group';
 	const PATCH_PLUGIN = 'ok-poster-group';
@@ -101,7 +101,7 @@ class okpOSTERBASE {
 	 * @param type $post
 	 * @return type
 	 */
-	public function futureSentVk($post_id, $post) {
+	public function futureSentOk($post_id, $post) {
 
 		$postData = get_post($post_id);
 		$title = $postData->post_title;
@@ -112,7 +112,7 @@ class okpOSTERBASE {
 			return $post_id;
 		}
 		if ($okposter_onoff == 'on') {
-			$status_sent = $okpunk->setVkWall($post_id); //Отправка текста
+			$status_sent = $okpunk->setOkWall($post_id); //Отправка текста
 			$okpunk->logJornal($post_id, $title, $status_sent); //Логируем результаты
 		}
 		return $post_id;
@@ -127,7 +127,7 @@ class okpOSTERBASE {
 		if (in_array($post->post_type, get_option('okposter_posttype')) AND isset($_GET['okp_repost'])) {
 			$post_id = $_GET['okp_repost'];
 			$okpunk = new OKPOSTERFUNCTION;
-			$status_sent = $okpunk->setVkWall($post_id); //Отправка текста
+			$status_sent = $okpunk->setOkWall($post_id); //Отправка текста
 			$status_arr = json_decode($status_sent);
 			//Удаляем из строки запроса номер записи
 			$parts = parse_url($_SERVER["REQUEST_URI"]);
