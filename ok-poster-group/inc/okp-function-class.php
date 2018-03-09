@@ -64,7 +64,7 @@ class OKPOSTERFUNCTION {
 			900 => "NO_SUCH_APP Возвращается при попытке получить открытую информацию для несуществующего приложения",
 			5000 => "INVALID_RESPONSE Недопустимый ответ (например, указан несуществующий формат)",
 			9999 => "SYSTEM Критическая системная ошибка. Оповестите об этом службу поддержки"
-		); //a description of possible errors
+		); //a description of possible errors for logging
 
 		$postData = get_post($post_id);
 		$title = $postData->post_title;
@@ -77,8 +77,7 @@ class OKPOSTERFUNCTION {
 		$okposter_seckey = get_option('okposter_seckey'); //Секретный ключ приложения
 		$okposter_pubkey = get_option('okposter_pubkey'); //Публичный ключ приложения
 		$okposter_text_link = get_option('okposter_text_link'); //разворачивать ссылку
-		
-		$okposter_id = get_option('okposter_id'); //ID группы или пользователя
+
 		$okposter_signed = get_option('okposter_signed');
 		$okposter_counttext = get_option('okposter_counttext');
 		$postType = get_post_type($post_id);
@@ -126,7 +125,8 @@ class OKPOSTERFUNCTION {
 		$parameters['sig'] = $sig;
 		$parameters['access_token'] = $okposter_accesstoken;
 
-		$curlinfo = wp_remote_post(self::METHOD_URL_OK, array('body' => $parameters));
+		$curlinfo = wp_remote_post(self::METHOD_URL_OK, array('body' => $parameters)); // send link, text and caption to ok.ru
+
 		if (is_wp_error($curlinfo)) {
 			$errMessage = $curlinfo->get_error_message();
 			echo 'Ошибка отправки: ' . $errMessage;

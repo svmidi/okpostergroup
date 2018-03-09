@@ -12,7 +12,7 @@ class OKPOSTERBASE {
 	const NAME_MENU_OPTIONS_PAGE = 'OKPosterGP';
 	const NAME_SERVIC_ORIGINAL_TEXT = 'OK Poster Group plugin';
 	const URL_PLUGIN_CONTROL = 'options-general.php?page=okposter-page';
-	const URL_OK_DEVCREATE = 'https://ok.ru/devaccess'; //ССылка на создание придложения
+	const URL_OK_DEVCREATE = 'https://ok.ru/devaccess'; //ССылка на создание придложения / Link to create an application on ok.ru
 
 	/**
 	 * URL страницы подменю
@@ -44,8 +44,7 @@ class OKPOSTERBASE {
 		add_option('okposter_text_link', '0'); //ссылка - текст
 		add_option('okposter_counttext', '40');
 		add_option('okposter_onoff');
-		
-		add_option('okposter_id', '-'); //ID группы или пользователя
+
 		add_option('okposter_signed', '1');
 		add_option('okposter_jornal', array());
 		add_option('okposter_posttype', array('post' => 'post')); //Типы выбранных записей
@@ -64,7 +63,6 @@ class OKPOSTERBASE {
 		delete_option('okposter_counttext');
 		delete_option('okposter_onoff');
 
-		delete_option('okposter_id'); //ID группы или пользователя
 		delete_option('okposter_signed');
 		delete_option('okposter_jornal');
 		delete_option('okposter_posttype'); //Типы выбранных записей
