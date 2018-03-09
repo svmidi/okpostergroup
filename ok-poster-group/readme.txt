@@ -1,7 +1,7 @@
 === OK Poster Group ===
 Plugin URI: https://github.com/svmidi/okpostergroup
 Contributors: svmidi
-Tags: ok, autopost, auto-post, auto post, social, ok.com, odnoklassniki
+Tags: ok, autopost, auto-post, auto post, social, ok.ru, odnoklassniki, crosposting
 Requires at least: 4.9
 Tested up to: 4.9.4
 Stable tag: 1.0
@@ -10,7 +10,7 @@ Donate link: https://money.yandex.ru/to/41001314494774
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Простой кроспостинг из WordPress в группу социальной сети Одноклассники.
+Simple crosposting from WordPress to the social network Odnoklassniki.
 
 == Description ==
 
