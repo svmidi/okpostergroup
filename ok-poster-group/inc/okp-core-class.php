@@ -257,7 +257,7 @@ class OKPOSTERBASE {
 		}
 
 		$data1 = (isset($_POST['okposter_new_field']))?'on':'';
-		//Обновление данных в базе даннхы
+		//Обновление данных в базе данных
 		update_post_meta($post_id, '_okposter_meta_value_key', $data1);
 	}
 
