@@ -8,7 +8,6 @@ $okposter_pubkey = get_option('okposter_pubkey'); //публичный ключ
 $okposter_text_link = get_option('okposter_text_link'); //разворачивать ссылку
 $okposter_gid = get_option('okposter_gid'); //группа в которую публиковать
 $okposter_counttext = get_option('okposter_counttext');
-$okposter_proxy = get_option('okposter_proxy'); //Прокси сервер, для публикации через прокси
 
 $okposter_onoff = get_option('okposter_onoff');
 $okposter_jornal = get_option('okposter_jornal');
@@ -121,7 +120,7 @@ $dir_plugin_absolut = plugin_dir_path(__FILE__);
 	</table>
 
 	<input type="hidden" name="action" value="update" />
-	<input type="hidden" name="page_options" value="okposter_aid, okposter_accesstoken, okposter_seckey, okposter_id, okposter_pubkey, okposter_text_link, okposter_gid, okposter_counttext, okposter_onoff, okposter_posttype, okposter_proxy,okposter_proxy_userpaswd" />
+	<input type="hidden" name="page_options" value="okposter_aid, okposter_accesstoken, okposter_seckey, okposter_id, okposter_pubkey, okposter_text_link, okposter_gid, okposter_counttext, okposter_onoff, okposter_posttype" />
 	<p class="submit">
 		<input type="submit" class="button" value="<?php _e('Save Changes') ?>" />
 	</p>
