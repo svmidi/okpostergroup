@@ -258,13 +258,13 @@ class OKPOSTERBASE {
 			return $post_id;
 		}
 
-		$data1 = $_POST['okposter_new_field'];
+		$data1 = (isset($_POST['okposter_new_field'])):'on'?'';
 		//Обновление данных в базе даннхы
 		update_post_meta($post_id, '_okposter_meta_value_key', $data1);
 	}
 
 	/**
-	 * Отправка данных На стену ВК при публикации записи
+	 * Отправка данных в группу ОК при публикации записи
 	 */
 	public function metaboxSentOK($post_id) {
 
