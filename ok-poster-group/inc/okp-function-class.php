@@ -2,8 +2,6 @@
 class OKPOSTERFUNCTION {
 
 	const METHOD_URL_OK = 'https://api.ok.ru/fb.do?'; //Метод постинга сообщений
-	const METHOD_URL_VKIMAGE = 'https://api.vk.com/method/photos.getWallUploadServer?'; //Метод получения сервера загрузок изображения
-	const METHOD_URL_VKIMAGE_SAVE = 'https://api.vk.com/method/photos.saveWallPhoto?'; //Загружает изображение в группу
 
 	/**
 	 * Условия для обновления версии плагина
