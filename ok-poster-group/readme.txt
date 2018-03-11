@@ -21,6 +21,8 @@ Simple crosposting from WordPress to the social network Odnoklassniki.
 * Подробная инструкция по настройке.
 * Абсолютно бесплатный плагин.
 
+Передача данных между Wordpress и ok.ru проходит по адресу https://api.ok.ru/
+
 Плагин создан на основе плагина VK Poster Group (Djo)
 
 == Installation ==
